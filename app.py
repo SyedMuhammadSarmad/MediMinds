@@ -1,62 +1,74 @@
 import chainlit as cl
 
 @cl.on_chat_start
-def start():
+async def start():
+    
+    cl.user_session.set("role", "doctor")
     cl.user_session.set("step", "main")
-   # cl.chat_settings.set({"role": "doctor"})
 
-    cl.send_message(
-        content="""
-        # 🧠 AI Medical Assistant
+    
+    await cl.Message(
+        content=
 
-        Welcome! How can I help you today?
-        
-        Please choose an option below:
-        
-        - 📄 Analyze Medical Report
-        - 🩺 Symptom Checker
-        - 📋 View Patient Summary
-        - 🛡️ Do's & Don'ts Recommendations
-        - 📊 View Test Trends
-        """,
-        buttons=[
-            cl.Button(name="Analyze Report", value="analyze_report"),
-            cl.Button(name="Symptom Checker", value="symptom_checker"),
-            cl.Button(name="Patient Summary", value="patient_summary"),
-            cl.Button(name="Do's & Don'ts", value="dos_donts"),
-            cl.Button(name="Test Trends", value="test_trends")
+
+"""
+# 🩺 AI Medical Assistant
+
+Welcome! How can I help you today?
+
+Please choose an option below:
+
+- 📄 `Analyze Medical Report`
+- 🧠 `Symptom Checker`  
+- 📋 `View Patient Summary ` 
+- 🛡️ `Do's & Don'ts Recommendations`  
+- 📊 `View Test Trends`
+
+"""
+    ,
+        actions=[
+            cl.Action(name="AnalyzeReport", label="Analyze Medical Report" , payload={"action": "analyze_report"}),
+            cl.Action(name="SymptomChecker", label="Symptom Checker", payload={"action": "symptom_checker"}),
+            cl.Action(name="PatientSummary", label="View Patient Summary", payload={"action": "patient_summary"}),
+            cl.Action(name="DosDonts", label="Do's & Don'ts Recommendations", payload={"action": "dos_donts"}),
+            cl.Action(name="TestTrends", label="View Test Trends", payload={"action": "test_trends"})
         ]
-    )
+    ).send()
+
+@cl.action_callback("AnalyzeReport")
+async def on_analyze_report(action):
+    cl.user_session.set("step", "upload")
+    await cl.Message(content="Please upload the medical report file (PDF/Image).").send()
+
+@cl.action_callback("SymptomChecker")
+async def on_symptom_checker(action):
+    cl.user_session.set("step", "symptom")
+    await cl.Message(content="Please enter symptoms (comma separated):").send()
+
+@cl.action_callback("PatientSummary")
+async def on_patient_summary(action):
+    await cl.Message(content="Here's the summary of patient's past visits and conditions.").send()
+
+@cl.action_callback("DosDonts")
+async def on_dos_donts(action):
+    await cl.Message(content="Based on the diagnosis, here are the Do's and Don'ts for the patient:").send()
+
+@cl.action_callback("TestTrends")
+async def on_test_trends(action):
+    await cl.Message(content="Visualizing trends from lab results over time.").send()
 
 @cl.on_message
-def handle_msg(msg: cl.Message):
+async def handle_msg(msg: cl.Message):
     step = cl.user_session.get("step")
 
-    if msg.content == "analyze_report":
-        cl.user_session.set("step", "upload")
-        cl.send_message("Please upload the medical report file (PDF/Image).")
-
-    elif msg.content == "symptom_checker":
-        cl.user_session.set("step", "symptom")
-        cl.send_message("Please enter symptoms (comma separated):")
-
-    elif msg.content == "patient_summary":
-        cl.send_message("Here's the summary of patient's past visits and conditions.")
-
-    elif msg.content == "dos_donts":
-        cl.send_message("Based on the diagnosis, here are the Do's and Don'ts for the patient:")
-
-    elif msg.content == "test_trends":
-        cl.send_message("Visualizing trends from lab results over time.")
-
-    elif step == "symptom":
+    if step == "symptom":
         symptoms = msg.content
-        cl.send_message(f"Checking conditions for symptoms: {symptoms}")
-        # Optionally call your backend model here
+        await cl.Message(content=f"Checking conditions for symptoms: {symptoms}").send()
+        #backend 
 
     elif step == "upload":
-        cl.send_message("Report is being analyzed... (Upload handling to be added)")
-        # Optionally call your report parser backend here
+        await cl.Message(content="Report is being analyzed... (Upload handling to be added)").send()
+        # report parser 
 
     else:
-        cl.send_message("Please choose one of the options above to get started.")
+        await cl.Message(content="Please choose one of the options above to get started.").send()
