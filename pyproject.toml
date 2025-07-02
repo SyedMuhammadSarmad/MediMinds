@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "asyncpg>=0.30.0",
     "chainlit>=2.5.5",
+    "openai-agents>=0.1.0",
     "sqlalchemy>=2.0.41",
     "sqlalchemy-cockroachdb>=2.0.3",
 ]
