@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,Date, Time
 from sqlalchemy.orm import sessionmaker
 import os 
 
@@ -57,5 +57,7 @@ try:
 except Exception as e:
     print("Failed to connect to database.")
     print(f"{e}")
+
+Session = sessionmaker(bind=engine)
 
 
