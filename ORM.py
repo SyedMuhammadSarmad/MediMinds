@@ -53,7 +53,7 @@ engine = create_engine(
 )
 try:
     Base.metadata.create_all(engine)
-    print("Database connected")
+    # print("Database connected")
 except Exception as e:
     print("Failed to connect to database.")
     print(f"{e}")

@@ -8,6 +8,10 @@ dependencies = [
     "asyncpg>=0.30.0",
     "chainlit>=2.5.5",
     "openai-agents>=0.1.0",
+    "pdf2image>=1.17.0",
+    "pdfplumber>=0.11.7",
+    "pillow>=11.3.0",
+    "pytesseract>=0.3.13",
     "sqlalchemy>=2.0.41",
     "sqlalchemy-cockroachdb>=2.0.3",
 ]
