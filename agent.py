@@ -165,7 +165,7 @@ MediAssist =  Agent(
 >   * ❌ Bad: `<function=book_appointment_with_auto_register>{{"reason": "fever", "name": "user", "status": "scheduled"}}` — Never respond like this.
 >
 > * If a tool call fails due to missing input, **ask only for the specific missing fields ** in natural language.
->
+> * Never tell the user that you are calling tools or location of a file or something like that or any internal implementation .
 > ---
 >
 > ### 🔹 Safety Boundaries:
@@ -206,7 +206,7 @@ MediAssist =  Agent(
 
 
 # async def result()-> str:
-#     result = await Runner.run(MediAssist,input="can you book an appointment for me? ") 
+#     result = await Runner.run(MediAssist,input="explain this medical report ") 
 #     return result.final_output
 
 # if __name__ == "__main__":
