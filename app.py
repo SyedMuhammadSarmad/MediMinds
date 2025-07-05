@@ -51,8 +51,25 @@ Please provide the following details to book an appointment:
 - **Date**: Date of the appointment
 - **Time**: Time of the appointment 
 - **Reason**: Reason for the appointment
-- **Doctor**: Name of the doctor (optional, can be left blank)
-- **Status**: Status of the appointment (default is "scheduled")
+- **Doctor**: Name of the doctor 
+### Here is the list of doctors available in the hospital:
+| **Specialty**                     | **Description**                                                                 | **Name**         |
+|-----------------------------------|---------------------------------------------------------------------------------|-------------------------|
+| **General Practitioner (GP)**     | Provides primary care, diagnoses common illnesses, and refers to specialists.   | Dr. Emily Carter        |
+| **Cardiologist**                  | Specializes in heart and cardiovascular system disorders.                       | Dr. Michael Patel       |
+| **Dermatologist**                 | Treats skin, hair, and nail conditions.                                        | Dr. Sarah Nguyen        |
+| **Pediatrician**                  | Focuses on the health of infants, children, and adolescents.                   | Dr. James Wilson       |
+| **Neurologist**                   | Diagnoses and treats disorders of the nervous system, like epilepsy or stroke.  | Dr. Lisa Thompson       |
+| **Orthopedic Surgeon**            | Specializes in musculoskeletal system, including bones and joints.              | Dr. Robert Kim         |
+| **Oncologist**                    | Treats cancer through chemotherapy, radiation, or surgery.                     | Dr. Anna Martinez      |
+| **Psychiatrist**                  | Manages mental health disorders, prescribing medication or therapy.            | Dr. David Lee          |
+| **Gynecologist**                  | Focuses on women’s reproductive health and childbirth (often OB/GYN).          | Dr. Rachel Gupta       |
+| **Endocrinologist**               | Treats hormonal and metabolic disorders, like diabetes or thyroid issues.      | Dr. Thomas Brown       |
+| **Gastroenterologist**            | Specializes in digestive system disorders, such as IBS or liver disease.       | Dr. Maria Gonzalez     |
+| **Ophthalmologist**               | Diagnoses and treats eye conditions, including surgeries like LASIK.           | Dr. Steven Clark       |
+| **Anesthesiologist**              | Administers anesthesia and monitors patients during surgery.                   | Dr. Olivia Smith       |
+| **Pulmonologist**                 | Treats respiratory system conditions, like asthma or COPD.                     | Dr. Henry Davis        |
+| **Urologist**                     | Focuses on urinary tract and male reproductive system disorders. 
 
 '''
                      
@@ -78,6 +95,7 @@ async def handle_msg(msg: cl.Message):
             content = entry["content"]
             formatted.append(f"{role}: {content}")
         return "\n".join(formatted)
+    
     files = [el for el in msg.elements if hasattr(el, "path")]
 
     if cl.user_session.get("step") == "upload":

@@ -31,7 +31,7 @@ class Appointment(Base):
     time = Column(Time)
     reason = Column(String)
     doctor_name = Column(String)
-    notes = Column(Text)
+    notes = Column(Text, nullable=True)
     status = Column(String, default="scheduled")
     patient = relationship("Patient", back_populates="appointments")
 
