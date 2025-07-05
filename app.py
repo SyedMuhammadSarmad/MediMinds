@@ -2,6 +2,7 @@ import chainlit as cl
 from pathlib import Path
 from agent import MediAssist
 from agents import Runner
+from openai.types.responses import ResponseTextDeltaEvent
 @cl.on_chat_start
 async def start():
     
@@ -88,6 +89,9 @@ async def handle_msg(msg: cl.Message):
         "content": msg.content
     })
 
+    msg = cl.Message(content="")
+
+
     def format_history(history):
         formatted = []
         for entry in history:
@@ -101,28 +105,116 @@ async def handle_msg(msg: cl.Message):
     if cl.user_session.get("step") == "upload":
         if files:
             file = files[0]
-            agent_res = await Runner.run(MediAssist, input=f"Please analyze the medical report at {file.path} here is the old chat context {format_history(history)}")
-            await cl.Message(agent_res.final_output).send()
+            result = await Runner.run_stream(MediAssist, input=f"Please analyze the medical report at {file.path} here is the old chat context {format_history(history)}")
+            async for event in result.stream_events():
+                if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+                    response = event.data.delta
+                    if isinstance(response, str):
+                        await msg.stream_token(response)
+                    elif isinstance(response, dict) and "content" in response:
+                        await msg.stream_token(response["content"])
+                    else:
+                        print(f"Unexpected response format: {response}")
+                
+                elif event.type == "final_response":
+                    if hasattr(event.data, "content") and isinstance(event.data.content, str):
+                        await msg.stream_token(event.data.content)
+                    elif isinstance(event.data, dict) and "content" in event.data:
+                        await msg.stream_token(event.data["content"])
+                    else:
+                        print(f"Unexpected final response format: {event.data}")
+            history.append({
+                "role": "medical_assistant",
+                "content": msg.content
+            })
+            cl.user_session.set("history", history)
+            await msg.update()
             return
     if cl.user_session.get("step") == "medical_advice":
         if not files:
             details = msg.content
-            result = await Runner.run(MediAssist, input=f"Please provide medical advice based on the following symptoms: {details}. Here is the old chat context {format_history(history)}") 
-            await cl.Message(content=f"{result.final_output}").send()
+            result = Runner.run_streamed(MediAssist, input=f"Please provide medical advice based on the following symptoms: {details}. Here is the old chat context {format_history(history)}") 
+            async for event in result.stream_events():
+                if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+                    response = event.data.delta
+                    if isinstance(response, str):
+                        await msg.stream_token(response)
+                    elif isinstance(response, dict) and "content" in response:
+                        await msg.stream_token(response["content"])
+                    else:
+                        print(f"Unexpected response format: {response}")
+                
+                elif event.type == "final_response":
+                    if hasattr(event.data, "content") and isinstance(event.data.content, str):
+                        await msg.stream_token(event.data.content)
+                    elif isinstance(event.data, dict) and "content" in event.data:
+                        await msg.stream_token(event.data["content"])
+                    else:
+                        print(f"Unexpected final response format: {event.data}")
+            history.append({
+                "role": "medical_assistant",
+                "content": msg.content
+            })
+            cl.user_session.set("history", history)
+            await msg.update()
         else:
             await cl.Message(content=f"Please provide symptoms or health issues for report queiries use analyze medical reports option above").send()
             return
     if cl.user_session.get("step") == "book_appointment":
         if not files:
             details = msg.content
-            result = await Runner.run(MediAssist,input=f"Please book appointment for the {details}. Ask for the user for any missing details. Here is the old chat context {format_history(history)}") 
-            await cl.Message(content=f"{result.final_output}").send()
+            result =  Runner.run_streamed(MediAssist,input=f"Please book appointment for the {details}. Ask for the user for any missing details. Here is the old chat context {format_history(history)}") 
+            async for event in result.stream_events():
+                if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+                    response = event.data.delta
+                    if isinstance(response, str):
+                        await msg.stream_token(response)
+                    elif isinstance(response, dict) and "content" in response:
+                        await msg.stream_token(response["content"])
+                    else:
+                        print(f"Unexpected response format: {response}")
+                
+                elif event.type == "final_response":
+                    if hasattr(event.data, "content") and isinstance(event.data.content, str):
+                        await msg.stream_token(event.data.content)
+                    elif isinstance(event.data, dict) and "content" in event.data:
+                        await msg.stream_token(event.data["content"])
+                    else:
+                        print(f"Unexpected final response format: {event.data}")
+            history.append({
+                "role": "medical_assistant",
+                "content": msg.content
+            })
+            cl.user_session.set("history", history)
+            await msg.update()
         else:
             await cl.Message(content=f"Please provide appointment details without any files. If you want to check reports use Analyze medical reports option above").send()
         return
     #general chat
-    result = await Runner.run(MediAssist,input=format_history(history)) 
-    await cl.Message(content=result.final_output).send()
+    result = Runner.run_streamed(MediAssist,input=format_history(history)) 
+    async for event in result.stream_events():
+        if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+            response = event.data.delta
+            if isinstance(response, str):
+                await msg.stream_token(response)
+            elif isinstance(response, dict) and "content" in response:
+                await msg.stream_token(response["content"])
+            else:
+                print(f"Unexpected response format: {response}")
+        
+        elif event.type == "final_response":
+            if hasattr(event.data, "content") and isinstance(event.data.content, str):
+                await msg.stream_token(event.data.content)
+            elif isinstance(event.data, dict) and "content" in event.data:
+                await msg.stream_token(event.data["content"])
+            else:
+                print(f"Unexpected final response format: {event.data}")
+    history.append({
+        "role": "medical_assistant",
+        "content": msg.content
+    })
+    cl.user_session.set("history", history)
+    await msg.update()
     
 
 
