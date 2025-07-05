@@ -36,7 +36,7 @@ class Appointment(Base):
     patient = relationship("Patient", back_populates="appointments")
 
 
-db_uri = os.environ['DATABASE_URL'].replace("postgresql://", "cockroachdb://")
+db_uri = os.environ['my_DATABASE_URL'].replace("postgresql://", "cockroachdb://")
 
 here = os.path.dirname(__file__)
 cert_path = os.path.join(here, ".cert", "root.crt")
