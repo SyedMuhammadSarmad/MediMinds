@@ -53,8 +53,8 @@ uv sync
 Create a `.env` file with:
 
 ```env
-DATABASE_URL=your_postgres_cockroachdb_url
-OPENAI_API_KEY=your_openai_api_key
+my_DATABASE_URL=your_postgres_cockroachdb_url
+grok_cloud_api=your_grok_api_key
 include a `.cert/root.crt` file 
 ```
 
