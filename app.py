@@ -199,7 +199,7 @@ async def handle_msg(msg: cl.Message):
     if cl.user_session.get("step") == "book_appointment":
         if not files:
             details = msg.content
-            result =  Runner.run_streamed(MediAssist,input=f"Please book appointment for the {details}. Ask for the user for any missing details. Here is the old chat context {format_history(history)}") 
+            result =  Runner.run_streamed(MediAssist,input=f"Please book appointment for the {details} details provided. Ask for the user for any missing details. Here is the old chat context {format_history(history)}") 
             async for event in result.stream_events():
                 if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
                     response = event.data.delta
